@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>給王佑瀚的生日小卡片 🎂</title>
+    <title>給你的生日卡片 🎂</title>
 
     <style>
         * {
@@ -170,7 +170,7 @@
             border: 1px solid #f1dfe6;
             border-radius: 14px;
             box-shadow: 0 15px 35px rgba(80, 60, 80, .16);
-            padding: 20px 20px 25px;
+            padding: 18px 18px 22px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -235,32 +235,93 @@
 
         /* 大尊月老圖片專用與彈出動畫 */
         .page .god-image {
-            width: 150px;
-            height: 150px;
+            width: 90px;
+            height: 90px;
             object-fit: cover;
             border-radius: 50%;
-            border: 4px solid #fff;
-            box-shadow: 0 0 20px rgba(234, 178, 122, 0.6), 0 8px 18px rgba(165, 111, 131, 0.25);
-            margin-bottom: 10px;
+            border: 3px solid #fff;
+            box-shadow: 0 0 18px rgba(234, 178, 122, 0.6), 0 6px 15px rgba(165, 111, 131, 0.2);
+            margin-bottom: 6px;
             z-index: 2;
+            transition: transform 0.2s ease;
         }
 
         .page.active .god-image {
             animation: popIn 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
         }
 
+        /* 月老求籤搖晃動畫 */
+        .shake-img {
+            animation: shake 0.12s ease-in-out infinite alternate !important;
+        }
+
+        @keyframes shake {
+            0% { transform: rotate(-10deg) scale(1.08); }
+            100% { transform: rotate(10deg) scale(1.08); }
+        }
+
         @keyframes popIn {
-            0% {
-                transform: scale(0.2);
-                opacity: 0;
-            }
-            70% {
-                transform: scale(1.15);
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
+            0% { transform: scale(0.2); opacity: 0; }
+            70% { transform: scale(1.15); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* 求籤按鈕與籤詩顯示區塊 */
+        .draw-btn {
+            margin-top: 10px;
+            background: linear-gradient(135deg, #f7a8b8, #e88297);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(232, 130, 151, 0.35);
+            transition: all 0.2s ease;
+            z-index: 99;
+            position: relative;
+        }
+
+        .draw-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 14px rgba(232, 130, 151, 0.5);
+        }
+
+        .fortune-box {
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: #fff8fa;
+            border: 1px dashed #f1b3c4;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 280px;
+            display: none;
+            z-index: 99;
+            position: relative;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .fortune-box.show {
+            display: block;
+        }
+
+        .fortune-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #d15b75;
+            margin-bottom: 2px;
+        }
+
+        .fortune-text {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .page .emoji {
@@ -434,7 +495,7 @@
             transform: translate(-50%, -50%) translateY(-30px);
         }
 
-        /* 點開後提示文字立即隱藏 */
+        /* 點開後提示文字地區隱藏 */
         .opened .instruction {
             display: none !important;
         }
@@ -494,13 +555,21 @@
     </div>
 
     <script>
-        // 進入網頁時立刻跳出輸入框，密碼不對就重複跳出或關閉
-const password = prompt("防盜用密碼(6位)：");
-if (password !== "961001") { // 這裡可以改成你設定的密碼（例如他的生日）
-    alert("ERROR！");
-    document.body.innerHTML = "<h2 style='text-align:center;margin-top:20%;color:#888;'>驗證失敗，請重新整理頁面輸入正確密碼。</h2>";
-    throw new Error("Wrong password");
-}
+        // 月老籤詩庫
+        const fortunes = [
+            { title: "🥠【上上籤】桃花指數 99%", text: "月老紅線已綁定！新的一歲將有優質桃花天降，請做好脫單準備。" },
+            { title: "🥠【聖籤】告別單身大吉", text: "擇偶條件不必降，月老說你的天命真女正在路上，預計今年抵達！" },
+            { title: "🥠【特等籤】學業桃花雙收", text: "Code 寫得順，情路走得穩。今年不僅 Bug 少，感情還能順利通關！" },
+            { title: "🥠【上吉籤】魅力值爆棚", text: "自信即是頂級吸引力，多出門走走，身邊很快就會出現懂你的人。" }
+        ];
+
+        const password = prompt("防盜用密碼(6位)：");
+        if (password !== "961001") { 
+            alert("ERROR！");
+            document.body.innerHTML = "<h2 style='text-align:center;margin-top:20%;color:#888;'>驗證失敗，請重新整理頁面輸入正確密碼。</h2>";
+            throw new Error("Wrong password");
+        }
+
         const pages = [
             {
                 label: "FOR YOU",
@@ -600,11 +669,12 @@ if (password !== "961001") { // 這裡可以改成你設定的密碼（例如他
                 hint: "下一頁 →"
             },
 
-            // 🌸 新增：月老許願頁面
+            // 🌸 月老許願頁面
             {
+                isYueLaoPage: true,
                 label: "MAKE A WISH",
                 title: "月老親自加持",
-                image: "yue_lao.jpg", // 請確保圖片名稱一致
+                image: "yue_lao.jpg",
                 text:
 `知道你現在最需要什麼，
 特地幫你請了月老尊神！
@@ -626,8 +696,7 @@ if (password !== "961001") { // 這裡可以改成你設定的密碼（例如他
 更希望你每天都快樂。`,
                 hint: "♡"
             }
-        ];　 
- 
+        ];
 
         const envelope = document.getElementById("envelope");
         const scene = document.getElementById("scene");
@@ -646,16 +715,33 @@ if (password !== "961001") { // 這裡可以改成你設定的密碼（例如他
             const element = document.createElement("div");
             element.className = "page";
 
-            element.innerHTML = `
-                <div class="page-number">${index + 1} / ${pages.length}</div>
-                <div class="page-content">
-                    ${page.image ? `<img src="${page.image}" class="god-image" alt="月老">` : ""}
-                    ${page.emoji && !page.image ? `<div class="emoji">${page.emoji}</div>` : ""}
-                    ${page.title ? `<h2>${page.title}</h2>` : ""}
-                    ${page.text ? `<p>${page.text}</p>` : ""}
-                </div>
-                <small>${page.hint}</small>
-            `;
+            if (page.isYueLaoPage) {
+                element.innerHTML = `
+                    <div class="page-number">${index + 1} / ${pages.length}</div>
+                    <div class="page-content">
+                        <img src="${page.image}" class="god-image" alt="月老">
+                        <h2>${page.title}</h2>
+                        <p>${page.text}</p>
+                        <button class="draw-btn" id="drawBtn">向月老求籤 🥠</button>
+                        <div class="fortune-box" id="fortuneBox">
+                            <div class="fortune-title" id="fortuneTitle"></div>
+                            <div class="fortune-text" id="fortuneText"></div>
+                        </div>
+                    </div>
+                    <small>${page.hint}</small>
+                `;
+            } else {
+                element.innerHTML = `
+                    <div class="page-number">${index + 1} / ${pages.length}</div>
+                    <div class="page-content">
+                        ${page.image ? `<img src="${page.image}" class="god-image" alt="月老">` : ""}
+                        ${page.emoji && !page.image ? `<div class="emoji">${page.emoji}</div>` : ""}
+                        ${page.title ? `<h2>${page.title}</h2>` : ""}
+                        ${page.text ? `<p>${page.text}</p>` : ""}
+                    </div>
+                    <small>${page.hint}</small>
+                `;
+            }
 
             return element;
         }
@@ -677,6 +763,44 @@ if (password !== "961001") { // 這裡可以改成你設定的密碼（例如他
 
             buildDots();
         }
+
+        // 全域求籤事件點擊監聽 (含搖晃動畫效果)
+        document.addEventListener("click", function (e) {
+            if (e.target && e.target.id === "drawBtn") {
+                e.stopPropagation();
+                const drawBtn = e.target;
+                const godImg = document.querySelector(".god-image");
+
+                drawBtn.innerText = "誠心求籤中...🙏";
+                drawBtn.disabled = true;
+
+                // 開始搖晃月老圖片
+                if (godImg) {
+                    godImg.classList.add("shake-img");
+                }
+
+                // 搖晃 1 秒後停止並跳出籤詩
+                setTimeout(() => {
+                    if (godImg) {
+                        godImg.classList.remove("shake-img");
+                    }
+
+                    const randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+                    const fortuneTitle = document.getElementById("fortuneTitle");
+                    const fortuneText = document.getElementById("fortuneText");
+                    const fortuneBox = document.getElementById("fortuneBox");
+
+                    if (fortuneTitle && fortuneText && fortuneBox) {
+                        fortuneTitle.innerText = randomFortune.title;
+                        fortuneText.innerText = randomFortune.text;
+                        fortuneBox.classList.add("show");
+                    }
+
+                    drawBtn.innerText = "再求一次 ↺";
+                    drawBtn.disabled = false;
+                }, 1000);
+            }
+        });
 
         function buildDots() {
             dots.innerHTML = "";
@@ -813,6 +937,9 @@ if (password !== "961001") { // 這裡可以改成你設定的密碼（例如他
 
         cardStack.addEventListener("click", (event) => {
             if (!opened || animating) return;
+
+            // 避免點擊求籤按鈕時誤觸卡片翻頁
+            if (event.target.closest("#drawBtn") || event.target.closest("#fortuneBox")) return;
 
             const rect = cardStack.getBoundingClientRect();
             const clickX = event.clientX - rect.left;
