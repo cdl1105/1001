@@ -14,6 +14,7 @@
 
         body {
             min-height: 100vh;
+            position: relative;
             overflow: hidden;
             font-family:
                 -apple-system,
@@ -22,9 +23,21 @@
                 "Microsoft JhengHei",
                 sans-serif;
             background:
-                radial-gradient(circle at 20% 20%, #fff7fb 0%, transparent 30%),
-                radial-gradient(circle at 80% 80%, #f0f5ff 0%, transparent 30%),
+                radial-gradient(circle at 20% 20%, rgba(255,247,251,.96) 0%, transparent 32%),
+                radial-gradient(circle at 80% 80%, rgba(240,245,255,.96) 0%, transparent 32%),
                 linear-gradient(135deg, #fceef5, #eef3ff);
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: .22;
+            background-image: radial-gradient(rgba(165,111,131,.16) .7px, transparent .7px);
+            background-size: 7px 7px;
+            mix-blend-mode: multiply;
+        }
             display: flex;
             justify-content: center;
             align-items: center;
@@ -36,6 +49,7 @@
             inset: 0;
             pointer-events: none;
             overflow: hidden;
+            transform-style: preserve-3d;
         }
 
         .star {
@@ -51,6 +65,25 @@
         .star:nth-child(3) { left: 20%; top: 75%; animation-delay: 1.2s; }
         .star:nth-child(4) { left: 75%; top: 70%; animation-delay: .4s; }
         .star:nth-child(5) { left: 50%; top: 10%; animation-delay: 1.5s; }
+
+        .envelope::after {
+            content: "♡";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: #fff8fb;
+            color: #d8879c;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(165,111,131,.16);
+            z-index: 17;
+            transition: transform .6s ease, opacity .4s ease;
+        }
 
         @keyframes twinkle {
             0%, 100% { transform: scale(.7); opacity: .3; }
@@ -166,10 +199,14 @@
         .page {
             position: absolute;
             inset: 0;
-            background: #fffdfd;
-            border: 1px solid #f1dfe6;
-            border-radius: 14px;
-            box-shadow: 0 15px 35px rgba(80, 60, 80, .16);
+            background:
+                radial-gradient(circle at 15% 20%, rgba(255,235,243,.42), transparent 28%),
+                radial-gradient(circle at 85% 80%, rgba(238,242,255,.45), transparent 30%),
+                #fffdf9;
+            border: 1px solid #f0dce4;
+            border-radius: 9px 12px 10px 11px;
+            box-shadow: 0 18px 40px rgba(80, 60, 80, .17), inset 0 0 0 1px rgba(255,255,255,.7);
+            background-blend-mode: normal;
             padding: 18px 18px 22px;
             display: flex;
             flex-direction: column;
@@ -193,6 +230,18 @@
 
         .page-content::-webkit-scrollbar {
             display: none;
+        }
+
+        .page::after {
+            content: "✦";
+            position: absolute;
+            left: 15px;
+            bottom: 10px;
+            color: #e3b9c8;
+            font-size: 12px;
+            opacity: .65;
+            transform: rotate(-12deg);
+            pointer-events: none;
         }
 
         .page::before {
@@ -351,11 +400,12 @@
         @keyframes pageIn {
             from {
                 opacity: 0;
-                transform: rotateY(-55deg) translateX(25px);
+                transform: rotateY(-78deg) translateX(34px) scale(.98);
             }
+            55% { opacity: 1; }
             to {
                 opacity: 1;
-                transform: rotateY(0) translateX(0);
+                transform: rotateY(0) translateX(0) scale(1);
             }
         }
 
@@ -366,7 +416,7 @@
             }
             to {
                 opacity: 0;
-                transform: rotateY(55deg) translateX(-25px);
+                transform: rotateY(78deg) translateX(-34px) scale(.98);
             }
         }
 
@@ -485,14 +535,25 @@
         }
 
         .opened .envelope {
-            transform: translate(-50%, -50%) translateY(140px);
-            opacity: 0.2;
+            transform: translate(-50%, -50%) translateY(155px) scale(.94);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .opened .envelope::after {
+            transform: translate(-50%, -50%) scale(1.5);
+            opacity: 0;
         }
 
         .opened .card-stack {
             opacity: 1;
             pointer-events: auto;
-            transform: translate(-50%, -50%) translateY(-30px);
+            transform: translate(-50%, -50%) translateY(-30px) scale(1);
+        }
+
+        .card-stack {
+            transform-style: preserve-3d;
+            transition: transform 1.2s cubic-bezier(.2,.8,.2,1), opacity .5s ease;
         }
 
         /* 點開後提示文字地區隱藏 */
@@ -502,17 +563,30 @@
 
         @media (max-width: 600px) {
             .scene {
-                transform: scale(.85);
+                width: 100vw;
+                height: 470px;
+                transform: none;
             }
+
+            .envelope { width: min(82vw, 360px); height: calc(min(82vw, 360px) * .64); }
+            .envelope-left, .envelope-right { border-top-width: calc(min(82vw, 360px) * .32); border-bottom-width: calc(min(82vw, 360px) * .32); }
+            .envelope-left { border-left-width: calc(min(82vw, 360px) * .5); }
+            .envelope-right { border-right-width: calc(min(82vw, 360px) * .5); }
+            .envelope-bottom { border-left-width: calc(min(82vw, 360px) * .5); border-right-width: calc(min(82vw, 360px) * .5); }
+            .flap { border-left-width: calc(min(82vw, 360px) * .5); border-right-width: calc(min(82vw, 360px) * .5); }
 
             .card-stack {
-                width: 330px;
-                height: 310px;
+                width: 88vw;
+                max-width: 360px;
+                height: min(68vh, 330px);
             }
 
-            .controls {
-                bottom: -60px;
-            }
+            .page { padding: 18px 16px 20px; }
+            .page p { font-size: 13.5px; line-height: 1.72; max-width: 270px; }
+            .controls { bottom: -62px; gap: 9px; }
+            .nav-btn { padding: 8px 12px; font-size: 12px; }
+            .instruction { bottom: 7%; font-size: 13px; }
+            .final-message { bottom: 3%; font-size: 12px; }
         }
     </style>
 </head>
@@ -554,405 +628,274 @@
         願你新的一歲，一切都剛剛好。 ♡
     </div>
 
-    <script>
-        // 月老籤詩庫
-        const fortunes = [
-            { title: "🥠【上上籤】桃花指數 99%", text: "月老紅線已綁定！新的一歲將有優質桃花天降，請做好脫單準備。" },
-            { title: "🥠【聖籤】告別單身大吉", text: "擇偶條件不必降，月老說你的天命真子正在路上，預計今年抵達！" },
-            { title: "🥠【特等籤】學業桃花雙收", text: "微積分寫得順，情路走得穩。今年不僅考上牙醫，感情還能順利通關！" },
-            { title: "🥠【上吉籤】魅力值爆棚", text: "自信即是頂級吸引力，多出門走走，身邊很快就會出現懂你的人。" }
-        ];
+<script>
+    // 月老籤詩庫
+    const fortunes = [
+        { title: "🥠【上上籤】桃花指數 99%", text: "月老紅線已綁定！新的一歲將有優質桃花天降，請做好脫單準備。" },
+        { title: "🥠【聖籤】告別單身大吉", text: "擇偶條件不必降，月老說你的天命真子正在路上，預計今年抵達！" },
+        { title: "🥠【特等籤】學業桃花雙收", text: "微積分寫得順，情路走得穩。今年不僅考上牙醫，感情還能順利通關！" },
+        { title: "🥠【上吉籤】魅力值爆棚", text: "自信即是頂級吸引力，多出門走走，身邊很快就會出現懂你的人。" }
+    ];
 
-        const password = prompt("防盜用密碼(6位)：");
-        if (password !== "961001") { 
-            alert("ERROR！");
-            document.body.innerHTML = "<h2 style='text-align:center;margin-top:20%;color:#888;'>驗證失敗，請重新整理頁面輸入正確密碼。</h2>";
-            throw new Error("Wrong password");
-        }
+    const password = prompt("防盜用密碼(6位)：");
+    if (password !== "961001") { 
+        alert("ERROR！");
+        document.body.innerHTML = "<h2 style='text-align:center;margin-top:20%;color:#888;'>驗證失敗，請重新整理頁面輸入正確密碼。</h2>";
+        throw new Error("Wrong password");
+    }
 
-        const pages = [
-            {
-                label: "FOR YOU",
-                title: "給王佑瀚 🎂",
-                emoji: "✉️",
-                text:
-`我們認識這麼久了，
-這好像是第一次生日沒有一起過。
+    const pages = [
+        { label: "FOR YOU", title: "給王佑瀚 🎂", emoji: "✉️", text: `我們認識這麼久了，\n這好像是第一次生日沒有一起過。\n\n突然就各自上了大學，\n心裡還真的有點小小的感慨。`, hint: "點擊按鈕或卡片看下一頁 →" },
+        { label: "I MISS TAIPEI", title: "我要回台北", emoji: "✦", text: `原本以為我們可以一起在台北讀大學的。\n\n雖然最後結果相差十萬八千里，\n但希望接下來的日子，\n老天可以對我們好一點，別搞了。`, hint: "下一頁 →" },
+        { label: "THIS TIME", title: "我很厲害", emoji: "🎁", text: `以前也寫過這種卡片給你，\n但那時候寫得比較隨意，而且是一次發給很多人。\n\n少了點「王佑瀚專屬」的儀式感。\n\n所以這次我有認真。`, hint: "下一頁 →" },
+        { label: "A LITTLE SURPRISE", title: "浪漫資工女", emoji: "💻", text: `既然這次生日沒辦法親自幫你慶祝，\n我就發揮一下資工系的專長——\n\n但不要緊張，等我們見面再補。\n\n希望你能發揮想像力\n想像這是實體的卡片。`, hint: "下一頁 →" },
+        { label: "BTW", title: "先說好喔", emoji: "⚙️", text: `這是我自己刻出來的前端介面。\n\n如果翻頁有點小bug或卡卡的，\n看在我熬夜寫Code的份上，不要罵我！\n\n我盡力了。`, hint: "下一頁 →" },
+        { label: "ONE LAST THING", title: "這次沒有句子", emoji: "🌷", text: `通常卡片寫到這裡，\n我都會附上一句我很喜歡的名言佳句。\n\n但今年沒讀到什麼特別厲害的句子，\n所以送你一點小小的祝福：\n\n希望你可以做自己，少點煩惱，平安健康。`, hint: "下一頁 →" },
+        { label: "I AM PRETTY", title: "你很靠北", emoji: "🤝", text: `很期待繼續跟你一起長大，\n\n一起變成那個「很靠北」但又很有肩膀的大人。\n\n無論在哪裡，\n都要一起變成我們想成為的人。`, hint: "下一頁 →" },
+        { isYueLaoPage: true, label: "MAKE A WISH", title: "月老親自加持", image: "yue_lao.jpg", text: `知道你現在最需要什麼，\n特地幫你請了月老尊神！\n19歲桃花朵朵開，\n早日牽線成功、脫單順利！`, hint: "許完願按下一頁 →" },
+        { label: "HAPPY BIRTHDAY", title: "生日快樂！", emoji: "🎉", text: `最後——\n\n不只是今天生日快樂，\n\n更希望你每天都快樂。`, hint: "♡" }
+    ];
 
-突然就各自上了大學，
-心裡還真的有點小小的感慨。`,
-                hint: "點擊按鈕或卡片看下一頁 →"
-            },
+    const envelope = document.getElementById("envelope");
+    const scene = document.getElementById("scene");
+    const cardStack = document.getElementById("cardStack");
+    const controls = document.getElementById("controls");
+    const dots = document.getElementById("dots");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const finalMessage = document.getElementById("finalMessage");
 
-            {
-                label: "I MISS TAIPEI",
-                title: "我要回台北",
-                emoji: "✦",
-                text:
-`原本以為我們可以一起在台北讀大學的。
+    let opened = false;
+    let currentPage = 0;
+    let animating = false;
 
-雖然最後結果相差十萬八千里，
-但希望接下來的日子，
-老天可以對我們好一點，別搞了。`,
-                hint: "下一頁 →"
-            },
+    function createPage(page, index) {
+        const element = document.createElement("div");
+        element.className = "page";
 
-            {
-                label: "THIS TIME",
-                title: "我很厲害",
-                emoji: "🎁",
-                text:
-`以前也寫過這種卡片給你，
-但那時候寫得比較隨意，而且是一次發給很多人。
-
-少了點「王佑瀚專屬」的儀式感。
-
-所以這次我有認真。`,
-                hint: "下一頁 →"
-            },
-
-            {
-                label: "A LITTLE SURPRISE",
-                title: "浪漫資工女",
-                emoji: "💻",
-                text:
-`既然這次生日沒辦法親自幫你慶祝，
-我就發揮一下資工系的專長——
-
-但不要緊張，等我們見面再補。
-
-希望你能發揮想像力
-想像這是實體的卡片。`,
-                hint: "下一頁 →"
-            },
-
-            {
-                label: "BTW",
-                title: "先說好喔",
-                emoji: "⚙️",
-                text:
-`這是我自己刻出來的前端介面。
-
-如果翻頁有點小bug或卡卡的，
-看在我熬夜寫Code的份上，不要罵我！
-
-我盡力了。`,
-                hint: "下一頁 →"
-            },
-
-            {
-                label: "ONE LAST THING",
-                title: "這次沒有句子",
-                emoji: "🌷",
-                text:
-`通常卡片寫到這裡，
-我都會附上一句我很喜歡的名言佳句。
-
-但今年沒讀到什麼特別厲害的句子，
-所以送你一點小小的祝福：
-
-希望你可以做自己，少點煩惱，平安健康。`,
-                hint: "下一頁 →"
-            },
-
-            {
-                label: "I AM PRETTY",
-                title: "你很靠北",
-                emoji: "🤝",
-                text:
-`很期待繼續跟你一起長大，
-
-一起變成那個「很靠北」但又很有肩膀的大人。
-
-無論在哪裡，
-都要一起變成我們想成為的人。`,
-                hint: "下一頁 →"
-            },
-
-            // 🌸 月老許願頁面
-            {
-                isYueLaoPage: true,
-                label: "MAKE A WISH",
-                title: "月老親自加持",
-                image: "yue_lao.jpg",
-                text:
-`知道你現在最需要什麼，
-特地幫你請了月老尊神！
-19歲桃花朵朵開，
-早日牽線成功、脫單順利！`,
-                hint: "許完願按下一頁 →"
-            },
-
-            {
-                label: "HAPPY BIRTHDAY",
-                title: "生日快樂！",
-                emoji: "🎉",
-                text:
-`最後——
-
-不只是今天生日快樂，
-
-更希望你每天都快樂。`,
-                hint: "♡"
-            }
-        ];
-
-        const envelope = document.getElementById("envelope");
-        const scene = document.getElementById("scene");
-        const cardStack = document.getElementById("cardStack");
-        const controls = document.getElementById("controls");
-        const dots = document.getElementById("dots");
-        const prevBtn = document.getElementById("prevBtn");
-        const nextBtn = document.getElementById("nextBtn");
-        const finalMessage = document.getElementById("finalMessage");
-
-        let opened = false;
-        let currentPage = 0;
-        let animating = false;
-
-        function createPage(page, index) {
-            const element = document.createElement("div");
-            element.className = "page";
-
-            if (page.isYueLaoPage) {
-                element.innerHTML = `
-                    <div class="page-number">${index + 1} / ${pages.length}</div>
-                    <div class="page-content">
-                        <img src="${page.image}" class="god-image" alt="月老">
-                        <h2>${page.title}</h2>
-                        <p>${page.text}</p>
-                        <button class="draw-btn" id="drawBtn">向月老求籤 🥠</button>
-                        <div class="fortune-box" id="fortuneBox">
-                            <div class="fortune-title" id="fortuneTitle"></div>
-                            <div class="fortune-text" id="fortuneText"></div>
-                        </div>
+        if (page.isYueLaoPage) {
+            element.innerHTML = `
+                <div class="page-number">${index + 1} / ${pages.length}</div>
+                <div class="page-content">
+                    <img src="${page.image}" class="god-image" alt="月老" onerror="this.style.display='none'">
+                    <h2>${page.title}</h2>
+                    <p>${page.text}</p>
+                    <button class="draw-btn" id="drawBtn">向月老求籤 🥠</button>
+                    <div class="fortune-box" id="fortuneBox">
+                        <div class="fortune-title" id="fortuneTitle"></div>
+                        <div class="fortune-text" id="fortuneText"></div>
                     </div>
-                    <small>${page.hint}</small>
-                `;
+                </div>
+                <small>${page.hint}</small>
+            `;
+        } else {
+            element.innerHTML = `
+                <div class="page-number">${index + 1} / ${pages.length}</div>
+                <div class="page-content">
+                    ${page.image ? `<img src="${page.image}" class="god-image" alt="月老" onerror="this.style.display='none'">` : ""}
+                    ${page.emoji && !page.image ? `<div class="emoji">${page.emoji}</div>` : ""}
+                    ${page.title ? `<h2>${page.title}</h2>` : ""}
+                    ${page.text ? `<p>${page.text}</p>` : ""}
+                </div>
+                <small>${page.hint}</small>
+            `;
+        }
+        return element;
+    }
+
+    function buildPages() {
+        cardStack.innerHTML = "";
+        pages.forEach((page, index) => {
+            const element = createPage(page, index);
+            if (index === currentPage) {
+                element.classList.add("active");
             } else {
-                element.innerHTML = `
-                    <div class="page-number">${index + 1} / ${pages.length}</div>
-                    <div class="page-content">
-                        ${page.image ? `<img src="${page.image}" class="god-image" alt="月老">` : ""}
-                        ${page.emoji && !page.image ? `<div class="emoji">${page.emoji}</div>` : ""}
-                        ${page.title ? `<h2>${page.title}</h2>` : ""}
-                        ${page.text ? `<p>${page.text}</p>` : ""}
-                    </div>
-                    <small>${page.hint}</small>
-                `;
+                element.style.display = "none";
             }
-
-            return element;
-        }
-
-        function buildPages() {
-            cardStack.innerHTML = "";
-
-            pages.forEach((page, index) => {
-                const element = createPage(page, index);
-
-                if (index === currentPage) {
-                    element.classList.add("active");
-                } else {
-                    element.style.display = "none";
-                }
-
-                cardStack.appendChild(element);
-            });
-
-            buildDots();
-        }
-
-        // 全域求籤事件點擊監聽 (含搖晃動畫效果)
-        document.addEventListener("click", function (e) {
-            if (e.target && e.target.id === "drawBtn") {
-                e.stopPropagation();
-                const drawBtn = e.target;
-                const godImg = document.querySelector(".god-image");
-
-                drawBtn.innerText = "誠心求籤中...🙏";
-                drawBtn.disabled = true;
-
-                // 開始搖晃月老圖片
-                if (godImg) {
-                    godImg.classList.add("shake-img");
-                }
-
-                // 搖晃 1 秒後停止並跳出籤詩
-                setTimeout(() => {
-                    if (godImg) {
-                        godImg.classList.remove("shake-img");
-                    }
-
-                    const randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
-                    const fortuneTitle = document.getElementById("fortuneTitle");
-                    const fortuneText = document.getElementById("fortuneText");
-                    const fortuneBox = document.getElementById("fortuneBox");
-
-                    if (fortuneTitle && fortuneText && fortuneBox) {
-                        fortuneTitle.innerText = randomFortune.title;
-                        fortuneText.innerText = randomFortune.text;
-                        fortuneBox.classList.add("show");
-                    }
-
-                    drawBtn.innerText = "再求一次 ↺";
-                    drawBtn.disabled = false;
-                }, 1000);
-            }
+            cardStack.appendChild(element);
         });
+        buildDots();
+    }
 
-        function buildDots() {
-            dots.innerHTML = "";
+    // 事件委派監聽求籤
+    document.addEventListener("click", function (e) {
+        if (e.target && e.target.id === "drawBtn") {
+            e.stopPropagation();
+            const drawBtn = e.target;
+            const godImg = drawBtn.closest('.page-content').querySelector(".god-image");
 
-            pages.forEach((_, index) => {
-                const dot = document.createElement("div");
-                dot.className = "dot";
+            drawBtn.innerText = "誠心求籤中...🙏";
+            drawBtn.disabled = true;
 
-                if (index === currentPage) {
-                    dot.classList.add("active");
-                }
-
-                dots.appendChild(dot);
-            });
-        }
-
-        function updateButtons() {
-            prevBtn.disabled = currentPage === 0;
-
-            if (currentPage === pages.length - 1) {
-                nextBtn.textContent = "再看一次 ↺";
-            } else {
-                nextBtn.textContent = "下一張 →";
-            }
-
-            buildDots();
-        }
-
-        function goToPage(newPage) {
-            if (animating) return;
-
-            if (newPage >= pages.length) {
-                currentPage = 0;
-                showCurrentPageWithoutAnimation();
-                return;
-            }
-
-            if (newPage < 0 || newPage === currentPage) return;
-
-            animating = true;
-
-            const oldPage = cardStack.children[currentPage];
-            const newPageElement = cardStack.children[newPage];
-
-            oldPage.classList.remove("active");
-            oldPage.classList.add("exit");
+            if (godImg) godImg.classList.add("shake-img");
 
             setTimeout(() => {
-                oldPage.classList.remove("exit");
-                oldPage.style.display = "none";
+                if (godImg) godImg.classList.remove("shake-img");
 
-                currentPage = newPage;
+                const randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+                const fortuneTitle = document.getElementById("fortuneTitle");
+                const fortuneText = document.getElementById("fortuneText");
+                const fortuneBox = document.getElementById("fortuneBox");
 
-                newPageElement.style.display = "flex";
+                if (fortuneTitle && fortuneText && fortuneBox) {
+                    fortuneTitle.innerText = randomFortune.title;
+                    fortuneText.innerText = randomFortune.text;
+                    fortuneBox.classList.add("show");
+                }
 
-                void newPageElement.offsetWidth;
+                drawBtn.innerText = "再求一次 ↺";
+                drawBtn.disabled = false;
+            }, 1000);
+        }
+    });
 
-                newPageElement.classList.add("active");
+    function buildDots() {
+        dots.innerHTML = "";
+        pages.forEach((_, index) => {
+            const dot = document.createElement("div");
+            dot.className = "dot" + (index === currentPage ? " active" : "");
+            dots.appendChild(dot);
+        });
+    }
 
-                updateButtons();
+    function updateButtons() {
+        prevBtn.disabled = currentPage === 0;
+        nextBtn.textContent = (currentPage === pages.length - 1) ? "再看一次 ↺" : "下一張 →";
+        buildDots();
+    }
 
-                setTimeout(() => {
-                    animating = false;
-                }, 550);
+    function goToPage(newPage) {
+        if (animating) return;
 
-            }, 400);
-
-            if (newPage === pages.length - 1) {
-                setTimeout(createHearts, 450);
-                setTimeout(() => {
-                    finalMessage.classList.add("show");
-                }, 800);
-            } else {
-                finalMessage.classList.remove("show");
-            }
+        if (newPage >= pages.length) {
+            currentPage = 0;
+            showCurrentPageWithoutAnimation();
+            return;
         }
 
-        function showCurrentPageWithoutAnimation() {
-            Array.from(cardStack.children).forEach((page, index) => {
-                page.style.display = index === currentPage ? "flex" : "none";
-                page.classList.remove("active", "exit");
-            });
+        if (newPage < 0 || newPage === currentPage) return;
 
-            const current = cardStack.children[currentPage];
-            current.classList.add("active");
+        animating = true;
+        const oldPage = cardStack.children[currentPage];
+        const newPageElement = cardStack.children[newPage];
+
+        oldPage.classList.remove("active");
+        oldPage.classList.add("exit");
+
+        setTimeout(() => {
+            oldPage.classList.remove("exit");
+            oldPage.style.display = "none";
+
+            currentPage = newPage;
+            newPageElement.style.display = "flex";
+            void newPageElement.offsetWidth;
+            newPageElement.classList.add("active");
 
             updateButtons();
+            setTimeout(() => { animating = false; }, 550);
+        }, 400);
+
+        if (newPage === pages.length - 1) {
+            setTimeout(createHearts, 450);
+            setTimeout(() => { finalMessage.classList.add("show"); }, 800);
+        } else {
             finalMessage.classList.remove("show");
         }
+    }
 
-        function createHearts() {
-            const hearts = ["♡", "♥", "✦", "✧", "🎂", "🌸"];
-
-            for (let i = 0; i < 22; i++) {
-                setTimeout(() => {
-                    const heart = document.createElement("div");
-
-                    heart.className = "heart";
-                    heart.innerText =
-                        hearts[Math.floor(Math.random() * hearts.length)];
-
-                    heart.style.left = (10 + Math.random() * 80) + "%";
-                    heart.style.bottom = "20%";
-                    heart.style.fontSize =
-                        (14 + Math.random() * 16) + "px";
-                    heart.style.animationDuration =
-                        (2.2 + Math.random() * 1.8) + "s";
-
-                    document.body.appendChild(heart);
-
-                    setTimeout(() => heart.remove(), 4000);
-                }, i * 90);
-            }
-        }
-
-        envelope.addEventListener("click", () => {
-            if (opened) return;
-
-            opened = true;
-            scene.classList.add("opened");
-
-            setTimeout(() => {
-                controls.classList.add("show");
-            }, 800);
+    function showCurrentPageWithoutAnimation() {
+        Array.from(cardStack.children).forEach((page, index) => {
+            page.style.display = index === currentPage ? "flex" : "none";
+            page.classList.remove("active", "exit");
         });
-
-        prevBtn.addEventListener("click", () => {
-            goToPage(currentPage - 1);
-        });
-
-        nextBtn.addEventListener("click", () => {
-            goToPage(currentPage + 1);
-        });
-
-        cardStack.addEventListener("click", (event) => {
-            if (!opened || animating) return;
-
-            // 避免點擊求籤按鈕時誤觸卡片翻頁
-            if (event.target.closest("#drawBtn") || event.target.closest("#fortuneBox")) return;
-
-            const rect = cardStack.getBoundingClientRect();
-            const clickX = event.clientX - rect.left;
-
-            if (clickX > rect.width / 2) {
-                goToPage(currentPage + 1);
-            } else {
-                goToPage(currentPage - 1);
-            }
-        });
-
-        buildPages();
+        cardStack.children[currentPage].classList.add("active");
         updateButtons();
-    </script>
+        finalMessage.classList.remove("show");
+    }
+
+    function createHearts() {
+        const hearts = ["♡", "♥", "✦", "✧", "🎂", "🌸"];
+        for (let i = 0; i < 22; i++) {
+            setTimeout(() => {
+                const heart = document.createElement("div");
+                heart.className = "heart";
+                heart.innerText = hearts[Math.floor(Math.random() * hearts.length)];
+                heart.style.left = (10 + Math.random() * 80) + "%";
+                heart.style.bottom = "20%";
+                heart.style.fontSize = (14 + Math.random() * 16) + "px";
+                heart.style.animationDuration = (2.2 + Math.random() * 1.8) + "s";
+                
+                // 動畫結束自動移除 DOM
+                heart.addEventListener('animationend', () => heart.remove());
+                document.body.appendChild(heart);
+            }, i * 90);
+        }
+    }
+
+    function openingSparkles() {
+        const symbols = ["✦", "✧", "♡", "·", "🌸"];
+        for (let i = 0; i < 16; i++) {
+            setTimeout(() => {
+                const s = document.createElement("div");
+                s.className = "heart";
+                s.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                s.style.left = (25 + Math.random() * 50) + "%";
+                s.style.bottom = (35 + Math.random() * 15) + "%";
+                s.style.fontSize = (10 + Math.random() * 12) + "px";
+                s.style.animationDuration = (1.5 + Math.random() * 1.2) + "s";
+                s.addEventListener("animationend", () => s.remove());
+                document.body.appendChild(s);
+            }, i * 55);
+        }
+    }
+
+    envelope.addEventListener("click", () => {
+        if (opened) return;
+        opened = true;
+        scene.classList.add("opened");
+        openingSparkles();
+        setTimeout(() => { controls.classList.add("show"); }, 800);
+    });
+
+    prevBtn.addEventListener("click", () => goToPage(currentPage - 1));
+    nextBtn.addEventListener("click", () => goToPage(currentPage + 1));
+
+    // 鍵盤左右鍵翻頁
+    document.addEventListener("keydown", (e) => {
+        if (!opened) return;
+        if (e.key === "ArrowRight") goToPage(currentPage + 1);
+        if (e.key === "ArrowLeft") goToPage(currentPage - 1);
+    });
+
+    // 手機觸控左右滑動翻頁 (Swipe)
+    let touchStartX = 0;
+    cardStack.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    cardStack.addEventListener('touchend', e => {
+        if (!opened || animating) return;
+        let touchEndX = e.changedTouches[0].screenX;
+        if (touchStartX - touchEndX > 50) goToPage(currentPage + 1);
+        else if (touchEndX - touchStartX > 50) goToPage(currentPage - 1);
+    }, { passive: true });
+
+    cardStack.addEventListener("click", (event) => {
+        if (!opened || animating) return;
+        if (event.target.closest("#drawBtn") || event.target.closest("#fortuneBox")) return;
+
+        const rect = cardStack.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        if (clickX > rect.width / 2) {
+            goToPage(currentPage + 1);
+        } else {
+            goToPage(currentPage - 1);
+        }
+    });
+
+    buildPages();
+    updateButtons();
+</script>
 
 </body>
 </html>
